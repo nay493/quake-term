@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
-  echo "Usage: `basename $0` WINDOW_NAME"
-  exit
-fi
-
-
 get_window_id()
 {
   id=$(wmctrl -lx | grep "terminator\.Terminator.*${WINDOW_NAME}$" | cut -f1 -d' ')
@@ -60,8 +54,8 @@ toggle()
   fi
 }
 
-TERMINATOR="terminator"
-WINDOW_NAME=$1
+WINDOW_NAME='-quake-term-'
+TERMINATOR="terminator --role=${WINDOW_NAME}"
 WINDOW_STATE_FILE="$HOME/.shaded.$WINDOW_NAME"
 
 window_id=$(get_window_id)

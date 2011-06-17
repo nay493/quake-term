@@ -89,8 +89,8 @@ toggle()
   fi
 }
 
-HEIGHT=$1
-if [ HEIGHT < 300 ]
+HEIGHT=${1:-300}
+if [ $HEIGHT -lt 300 ]
 then
 	HEIGHT=300
 fi

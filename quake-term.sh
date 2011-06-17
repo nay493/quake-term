@@ -47,11 +47,12 @@ launch()
   
   id=$(find_window_id)
   echo "Decorating $WINDOW_NAME $id"
-	wmctrl -i -r $id -b add,maximized_horz
 	wmctrl -i -r $id -b add,above
 	wmctrl -i -r $id -b add,skip_taskbar
 	wmctrl -i -r $id -b add,skip_pager
 	wmctrl -i -r $id -b add,sticky
+	wmctrl -i -r $id -b add,maximized_horz
+	wmctrl -i -r $id -e 1,-1,-1,-1,$HEIGHT
 	save_state_file $id 'visible'
 }
 
@@ -87,6 +88,12 @@ toggle()
     show $id
   fi
 }
+
+HEIGHT=$1
+if [ HEIGHT < 300 ]
+then
+	HEIGHT=300
+fi
 
 WINDOW_NAME='-quake-term-'
 TERMINATOR="terminator -b --role=${WINDOW_NAME}"

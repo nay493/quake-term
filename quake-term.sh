@@ -10,11 +10,12 @@ get_window_id()
   if [ -f $WINDOW_STATE_FILE ]
 	then
   	id=$(cut -f1 -d: $WINDOW_STATE_FILE)
-		wmctrl_line=$(wmctrl -lx | grep $id)
-    if [ -z "$wmctrl_line" ]
+		xdotool getwindowpid $id >/dev/null 2>&1
+		if [ "$?" -ne 0 ]
 		then
 			id=''
 		fi
+
 	else
 		id=''
 	fi
@@ -59,8 +60,8 @@ hide()
   id=$(get_window_id)
   echo "Hiding $WINDOW_NAME $id"
   save_state_file $id 'hidden'
-  wmctrl -i -r $id -b add,shaded
-  #xdotool windowunmap $id
+  #wmctrl -i -r $id -b add,shaded
+  xdotool windowunmap $id
   
 }
 
@@ -69,8 +70,8 @@ show()
   id=$1
   echo "Showing $WINDOW_NAME $id"
   save_state_file $id "visible"
-  wmctrl -i -r $id -b remove,shaded
-  #xdotool windowmap $id
+  #wmctrl -i -r $id -b remove,shaded
+  xdotool windowmap $id
   wmctrl -i -r $id -b add,maximized_horz
   wmctrl -i -a $id 
 }
@@ -88,7 +89,7 @@ toggle()
 }
 
 WINDOW_NAME='-quake-term-'
-TERMINATOR="terminator --role=${WINDOW_NAME}"
+TERMINATOR="terminator -b --role=${WINDOW_NAME}"
 WINDOW_STATE_FILE="$HOME/.shaded.$WINDOW_NAME"
 echo $(get_window_id)
 window_id=$(get_window_id)

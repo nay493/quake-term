@@ -1,44 +1,76 @@
 #!/bin/bash
-
-get_window_id()
+find_window_id()
 {
   id=$(wmctrl -lx | grep "terminator\.Terminator.*${WINDOW_NAME}$" | cut -f1 -d' ')
   echo $id
 }
 
+get_window_id()
+{
+  if [ -f $WINDOW_STATE_FILE ]
+	then
+  	id=$(cut -f1 -d: $WINDOW_STATE_FILE)
+		wmctrl_line=$(wmctrl -lx | grep $id)
+    if [ -z "$wmctrl_line" ]
+		then
+			id=''
+		fi
+	else
+		id=''
+	fi
+  echo $id 
+}
+
+get_window_state()
+{
+ 	state=$(cut -f2 -d: $WINDOW_STATE_FILE)
+	echo $state
+}
+
+save_state_file()
+{
+  id=$1
+	state=$2
+	echo "Writing state file $WINDOW_STATE_FILE $id:$state"
+	echo "$id:$state" > $WINDOW_STATE_FILE
+}
+
 launch()
 {
   echo "Launching $WINDOW_NAME"
-	rm -f $WINDOW_STATE_FILE >/dev/null 2>&1
 	$TERMINATOR -T"$WINDOW_NAME" &
-	while [ "X$(get_window_id)" == "X" ]
+	while [ "X$(find_window_id)" == "X" ]
 	do
 		sleep .1
 	done
-
-  id=$(get_window_id)
+  
+  id=$(find_window_id)
   echo "Decorating $WINDOW_NAME $id"
 	wmctrl -i -r $id -b add,maximized_horz
 	wmctrl -i -r $id -b add,above
 	wmctrl -i -r $id -b add,skip_taskbar
 	wmctrl -i -r $id -b add,skip_pager
 	wmctrl -i -r $id -b add,sticky
+	save_state_file $id 'visible'
 }
 
 hide()
 {
-  id=$1
+  id=$(get_window_id)
   echo "Hiding $WINDOW_NAME $id"
-  touch $WINDOW_STATE_FILE
+  save_state_file $id 'hidden'
   wmctrl -i -r $id -b add,shaded
+  #xdotool windowunmap $id
+  
 }
 
 show()
 {
   id=$1
   echo "Showing $WINDOW_NAME $id"
-  rm -f $WINDOW_STATE_FILE >/dev/null 2>&1
+  save_state_file $id "visible"
   wmctrl -i -r $id -b remove,shaded
+  #xdotool windowmap $id
   wmctrl -i -r $id -b add,maximized_horz
   wmctrl -i -a $id 
 }
@@ -47,7 +79,8 @@ toggle()
 {
   id=$1
   echo "Toggling $WINDOW_NAME $id"
-  if [ ! -f $WINDOW_STATE_FILE ]; then
+	state=$(get_window_state)
+  if [ $state == "visible" ]; then
     hide $id
   else
     show $id
@@ -57,9 +90,9 @@ toggle()
 WINDOW_NAME='-quake-term-'
 TERMINATOR="terminator --role=${WINDOW_NAME}"
 WINDOW_STATE_FILE="$HOME/.shaded.$WINDOW_NAME"
-
+echo $(get_window_id)
 window_id=$(get_window_id)
-if [ "X$window_id" == "X" ]
+if [ -z "$window_id" ]
 then
   launch
 else

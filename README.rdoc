@@ -1,0 +1,14 @@
+= Quake-term
+One day guake stopped working. I thought, eh, who needs it and started working on this script. Works in Ubuntu 11.04 (unity and gnome 2)
+== Pre-requesits:
+terminator
+wmctrl
+xdotool (wmctrl can't hide windows and compiz won't shade a window that isn't decorated so I needed this to hide the window)
+compiz
+== Getting it working
+Edit your compiz settings:
+- Install the pre-requesits
+- Add a keyboard command that calls quake-term.sh and passes a height.
+- Set up a hot key for the command (I used ctrl-`)
+- An a fixed window placement in the place windows plugin. The window match should be role=-quake-term-, the I set my position to top/left of the screen which is 0,0 with keep in workarea cheched. Your mileage may vary.    
+

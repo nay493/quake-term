@@ -72,7 +72,7 @@ show()
   echo "Showing $WINDOW_NAME $id"
   save_state_file $id "visible"
   #wmctrl -i -r $id -b remove,shaded
-  xdotool windowmap $id
+  xdotool windowmap --sync $id
   wmctrl -i -r $id -b add,maximized_horz
   wmctrl -i -a $id 
 }

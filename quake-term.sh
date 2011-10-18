@@ -52,8 +52,7 @@ launch()
 	wmctrl -i -r $id -b add,skip_pager
 	wmctrl -i -r $id -b add,sticky
 	wmctrl -i -r $id -b add,maximized_horz
-	wmctrl -i -r $id -e 1,-1,-1,-1,$HEIGHT
-	save_state_file $id 'visible'
+	show $id
 }
 
 hide()
@@ -61,9 +60,7 @@ hide()
   id=$(get_window_id)
   echo "Hiding $WINDOW_NAME $id"
   save_state_file $id 'hidden'
-  #wmctrl -i -r $id -b add,shaded
-  xdotool windowunmap $id
-  
+  xdotool windowminimize $id
 }
 
 show()
@@ -71,10 +68,9 @@ show()
   id=$1
   echo "Showing $WINDOW_NAME $id"
   save_state_file $id "visible"
-  #wmctrl -i -r $id -b remove,shaded
-  xdotool windowmap $id
-  wmctrl -i -r $id -b add,maximized_horz
-  wmctrl -i -a $id 
+  xdotool windowactivate $id
+	xdotool windowfocus $id
+	wmctrl -i -r $id -e 0,0,0,0,$HEIGHT
 }
 
 toggle()
@@ -89,11 +85,14 @@ toggle()
   fi
 }
 
-HEIGHT=${1:-300}
-if [ $HEIGHT -lt 300 ]
+DEFAULT_HEIGHT=300
+HEIGHT=${1:-$DEFAULT_HEIGHT}
+if [ $HEIGHT -lt $DEFAULT_HEIGHT ]
 then
-	HEIGHT=300
+	HEIGHT=$DEFAULT_HEIGHT
 fi
+
+echo $HEIGHT
 
 WINDOW_NAME='-quake-term-'
 TERMINATOR="terminator -b --role=${WINDOW_NAME}"

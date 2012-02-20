@@ -10,8 +10,8 @@ get_window_id()
   if [ -f $WINDOW_STATE_FILE ]
 	then
   	id=$(cut -f1 -d: $WINDOW_STATE_FILE)
-		xdotool getwindowpid $id >/dev/null 2>&1
-		if [ "$?" -ne 0 ]
+		wmctrl_line=$(wmctrl -lx | grep "^${id}")
+    if [ -z "$wmctrl_line" ]
 		then
 			id=''
 		fi
@@ -70,7 +70,7 @@ show()
   save_state_file $id "visible"
   xdotool windowactivate $id
 	xdotool windowfocus $id
-	wmctrl -i -r $id -e 0,0,0,0,$HEIGHT
+	wmctrl -i -r $id -e 0,0,33,0,$HEIGHT
 }
 
 toggle()
@@ -92,13 +92,13 @@ then
 	HEIGHT=$DEFAULT_HEIGHT
 fi
 
-echo $HEIGHT
-
 WINDOW_NAME='-quake-term-'
 TERMINATOR="terminator -b --role=${WINDOW_NAME}"
 WINDOW_STATE_FILE="$HOME/.shaded.$WINDOW_NAME"
-echo $(get_window_id)
+
 window_id=$(get_window_id)
+echo "Window ID: $window_id"
+
 if [ -z "$window_id" ]
 then
   launch

@@ -70,7 +70,7 @@ show()
   save_state_file $id "visible"
   xdotool windowactivate $id
 	xdotool windowfocus $id
-	wmctrl -i -r $id -e 0,0,33,0,$HEIGHT
+	wmctrl -i -r $id -e 0,$X,$Y,$WIDTH,$HEIGHT
 }
 
 toggle()
@@ -87,6 +87,10 @@ toggle()
 
 DEFAULT_HEIGHT=300
 HEIGHT=${1:-$DEFAULT_HEIGHT}
+WIDTH=${2:-0}
+X=${3:-0}
+Y=${4:-0}
+
 if [ $HEIGHT -lt $DEFAULT_HEIGHT ]
 then
 	HEIGHT=$DEFAULT_HEIGHT
@@ -96,13 +100,13 @@ WINDOW_NAME='-quake-term-'
 TERMINATOR="terminator -b --role=${WINDOW_NAME}"
 WINDOW_STATE_FILE="$HOME/.shaded.$WINDOW_NAME"
 
-window_id=$(get_window_id)
+WINDOW_ID=$(get_window_id)
 echo "Window ID: $window_id"
 
-if [ -z "$window_id" ]
+if [ -z "$WINDOW_ID" ]
 then
   launch
 else
-  toggle $window_id
+  toggle $WINDOW_ID
 fi
 
